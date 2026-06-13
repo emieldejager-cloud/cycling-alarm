@@ -121,17 +121,21 @@ De bot leert van jouw feedback:
 
 ## Raspberry Pi — draaien als systemd service
 
-### 1. Kopieer de app naar je Pi
-
-```bash
-scp -r cycling-alarm pi@raspberrypi.local:~/cycling-alarm
-```
-
-### 2. Installeer dependencies op de Pi
+### 1. SSH naar de Pi en clone de repo
 
 ```bash
 ssh pi@raspberrypi.local
-cd ~/cycling-alarm
+```
+
+```bash
+sudo apt-get update && sudo apt-get install -y git
+git clone https://github.com/emieldejager-cloud/cycling-alarm.git
+cd cycling-alarm
+```
+
+### 2. Installeer dependencies
+
+```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/playwright install chromium
@@ -143,7 +147,15 @@ cp .env.example .env
 nano .env   # vul token, chat_id, hbo email+password in
 ```
 
-### 3. Maak een systemd service
+### 3. Updates binnenhalen
+
+```bash
+cd ~/cycling-alarm
+git pull
+sudo systemctl restart cycling-alarm
+```
+
+### 4. Maak een systemd service
 
 ```bash
 sudo nano /etc/systemd/system/cycling-alarm.service
@@ -171,7 +183,7 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-### 4. Activeer en start de service
+### 5. Activeer en start de service
 
 ```bash
 sudo systemctl daemon-reload
